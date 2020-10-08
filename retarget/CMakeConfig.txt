@@ -1,0 +1,94 @@
+#Configuration for GCC Flags
+#set ( CMAKE_CXX_OPT_FLAGS "-O3" )
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -Wall -Wextra -pedantic -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings ${CMAKE_CXX_OPT_FLAGS} " )
+set ( CMAKE_CXX_FLAGS_DEBUG "-g" )
+set ( CMAKE_LIBRARY_PATH    ${CMAKE_LIBRARY_PATH} lib )
+
+#Use CLANG++ as CXX-compiler
+if(${CMAKE_CXX_COMPILER} MATCHES "(.*)clang\\+\\+")   
+    message ( STATUS "Changing CXX_FLAGS for using clang++" )
+    set ( CMAKE_CXX_FLAGS                "-Wall")
+    set ( CMAKE_CXX_FLAGS_DEBUG          "-g")
+    set ( CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
+    set ( CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG")
+    set ( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+endif()
+
+#Additional definitions
+add_definitions( -DWITH_THREADS=0 )
+add_definitions ( "-DBOOST_NO_CXX11_SCOPED_ENUMS" )
+
+set ( TEST_DUMP_DIR "dump" )
+set ( TEST_SUB_DIR "out" )
+set ( TEST_FV_SUB_DIR "fv" )
+set ( TEST_RESULT_DIR "results" )
+
+set (DESIGN_INC_DIR_SC ${CMAKE_CURRENT_SOURCE_DIR}/../src/verilog_compressed )
+set (DESIGN_INC_DIR_SMC ${CMAKE_CURRENT_SOURCE_DIR}/../src/verilog_mergecompressed )
+set (DESIGN_INC_DIR_SSC ${CMAKE_CURRENT_SOURCE_DIR}/../src/verilog_dynmergecompressed )
+set (DESIGN_INC_DIR_SBSC ${CMAKE_CURRENT_SOURCE_DIR}/../src/verilog_bufferdynmergecompressed )
+
+set ( VECTHOR_CONFIG_FILE "default.conf")
+
+#Does not set the CCMAKE GUI cache (fix it?)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    message ( STATUS "Using debug compiler flags" )
+    set ( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" )
+endif()
+
+#Testing commands
+set( failRegex "[Ww]rong number of arguments" "[Pp]ermission denied" "[Cc]ommand not found" "No such file or directory" "^ *ERROR[ :]" "^ *FATAL[ :]" "^ *[Ee]rror[ :]" "^ *[Ff]atal[ :]" )
+
+set ( TDR_PATTERN
+    18432
+)
+
+set ( DEBUG_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test/debug/ )
+set ( FV_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test/fv/out/ )
+
+set ( FAST_DEBUG_PATTERN
+    ${DEBUG_PATH}/misr_exp_signatures_jpeg.txt.org
+)
+
+#set ( FAST_FV_PATTERN
+#    ${FV_PATH}/basicmath_large.bin
+#    ${FV_PATH}/dijkstra_large.bin
+##    ${FV_PATH}/fft.bin
+#    ${FV_PATH}/rijndael.bin
+#    ${FV_PATH}/sha.bin
+#)
+
+set ( FAST_RTDR_PATTERN
+    8
+    16
+    32
+    64
+    128
+    256
+    512
+    1024
+    2048
+    4096
+    8192
+    16384
+    32768
+    65536
+    131072
+    262144
+    524288
+    1048576
+    2097152
+    4194304
+    8388608
+)
+
+set ( FAST_TDR_PATTERN
+)
+	
+########################
+
+

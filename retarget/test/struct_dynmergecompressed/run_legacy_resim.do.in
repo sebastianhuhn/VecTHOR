@@ -1,0 +1,112 @@
+# Create the library.
+echo "Processing test file $env(testfile)"
+if {[file exists work]} {
+    vdel -all
+}
+vlib work
+
+# Compile the source files with -nopsl switch.
+vlog -vlog01compat -nopsl $env(testfile) tap_top.v tap_reg.v
+
+# Optimize design
+vopt -L work +acc work.tb_legacy_all -o work
+
+# Run the third simulation without psl.
+vsim -l results/transcript -debugdb=legacy -L work -nopsl work.tb_legacy_all
+ #-novopt
+
+#########
+if { [llength $env(batchmode)] == 0 } {
+    add wave -position insertpoint  \
+    sim:/tb_legacy_all/tdi_i \
+    sim:/tb_legacy_all/tms_i \
+    sim:/tb_legacy_all/trst_i \
+    sim:/tb_legacy_all/tck_i \
+    sim:/tb_legacy_all/tdr_debug_i
+
+    # States INIT
+    add wave -position insertpoint\
+    sim:/tb_legacy_all/TAP_CONTROLLER/test_logic_reset \
+    sim:/tb_legacy_all/TAP_CONTROLLER/run_test_idle
+
+    # States IR
+    add wave -position insertpoint -color yellow -group IR \
+    sim:/tb_legacy_all/TAP_CONTROLLER/select_ir_scan \
+    sim:/tb_legacy_all/TAP_CONTROLLER/capture_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/shift_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/shift_ir_neg \
+    sim:/tb_legacy_all/TAP_CONTROLLER/exit1_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/pause_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/exit2_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/update_ir
+
+    # States DR
+    add wave -position insertpoint -color yellow -group DR \
+    sim:/tb_legacy_all/TAP_CONTROLLER/select_dr_scan \
+    sim:/tb_legacy_all/TAP_CONTROLLER/capture_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/shift_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/exit1_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/pause_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/exit2_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/update_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/compr_dr \
+    sim:/tb_legacy_all/TAP_CONTROLLER/compr_exit
+
+    # Select states
+    add wave -position insertpoint -color yellow -group SELECT \
+    sim:/tb_legacy_all/TAP_CONTROLLER/extest_select \
+    sim:/tb_legacy_all/TAP_CONTROLLER/sample_preload_select \
+    sim:/tb_legacy_all/TAP_CONTROLLER/idcode_select \
+    sim:/tb_legacy_all/TAP_CONTROLLER/compr_select \
+    sim:/tb_legacy_all/TAP_CONTROLLER/mbist_select \
+    sim:/tb_legacy_all/TAP_CONTROLLER/debug_select \
+    sim:/tb_legacy_all/TAP_CONTROLLER/bypass_select
+
+    # TAP data
+    add wave -position insertpoint -color yellow -group TAP_DATA \
+    sim:/tb_legacy_all/TAP_CONTROLLER/tdo_pad_o \
+    sim:/tb_legacy_all/TAP_CONTROLLER/tdo_padoe_o
+
+    # JTAG data
+    add wave -position insertpoint -group IR_DATA -radix binary  \
+    sim:/tb_legacy_all/TAP_CONTROLLER/jtag_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/latched_jtag_ir \
+    sim:/tb_legacy_all/TAP_CONTROLLER/latched_jtag_ir_neg
+
+    # JTAG COMPR data
+    add wave -position insertpoint -color orange -radix binary -group COMPR  \
+    sim:/tb_legacy_all/TAP_CONTROLLER/compr_reg
+
+    # JTAG TDR
+    add wave -position insertpoint -color yellow -radix binary -group TDR  \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/tck_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/trst_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/we_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/sdi_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/pdi_we_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/pdi_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/address_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/pdo_re_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/pdo_o \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/td_reg \
+    sim:/tb_legacy_all/TAP_CONTROLLER/TDR/debug_i
+
+    # FL
+    add wave -position insertpoint -color yellow -radix binary -group FL  \
+    sim:/tb_legacy_all/TAP_CONTROLLER/FL/clk_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/FL/address_o \
+    sim:/tb_legacy_all/TAP_CONTROLLER/FL/pdi_i \
+    sim:/tb_legacy_all/TAP_CONTROLLER/FL/pdi_re_o
+    onbreak {resume}
+}
+#########
+# Freezing signals
+
+# force -freeze sim:/tb_legacy_all/TAP_CONTROLLER/FL/pdi_re_o 1'b1 226
+
+#########
+onbreak {stop}
+run -all
+
+exit -code 0
+

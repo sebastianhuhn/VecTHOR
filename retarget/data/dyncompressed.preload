@@ -1,0 +1,31 @@
+	// -> [Select_DR]
+	tms_i = #10 1'b1;
+
+	// -> [Select_IR]
+	tms_i = #10 1'b1;	
+	 
+	// -> [Cap_IR]
+	tms_i = #10 1'b0;
+
+	// COMPR_PRELOAD Shift 0-1-0-0
+	tdi_i = #20 1'b0;
+	tdi_i = #10 1'b0;	
+	tdi_i = #10 1'b1;
+	tdi_i = #10 1'b0;
+
+        // -> [Exit1_IR]
+        tms_i = 1'b1;
+        // -> [Update_IR]
+        tms_i = #10 1'b1;
+
+        // -> [RTI]
+        tms_i = #10 1'b0;
+
+        // -> [Select_DR]
+        tms_i = #10 1'b1;
+
+        // -> [Cap_DR]
+        tms_i = #10 1'b0;
+// --------------------------
+// Auto generated code for COMPR_PRELOAD should be included here
+// --------------------------

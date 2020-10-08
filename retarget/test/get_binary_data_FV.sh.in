@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# != 1 ]
+then
+	echo "[e] Wrong number of arguments! Usage: get_binary_data.sh <read-in path>" 
+	exit 1
+fi
+CBD=${CMAKE_CURRENT_BINARY_DIR}
+FVPATH=$CBD/fv
+mkdir -pv fv
+for f in $1/*
+do
+        FILE_BASENAME=`basename $f`
+        xxd -b $f | cut -d' ' -f8,9,10 --complement | cut -d: -f1 --complement  > $FVPATH/$FILE_BASENAME.text
+done
+
+exit 0
+
+
+

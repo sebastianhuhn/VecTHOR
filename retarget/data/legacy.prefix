@@ -1,0 +1,106 @@
+`timescale 1ns / 1ns
+`include "tap_top.v"
+
+module tb_legacy_all;
+
+reg tms_i;
+reg tck_i;
+reg trst_i;
+reg tdi_i;
+reg tdr_debug_i;
+
+tap_top TAP_CONTROLLER(
+	// JTAG pads
+	.tms_pad_i (tms_i), 
+	.tck_pad_i (tck_i), 
+	.trst_pad_i (trst_i), 
+	.tdi_pad_i (tdi_i), 
+	.tdo_pad_o ( open ),
+	.tdo_padoe_o ( open ),
+
+	// DEBUG pads
+	.tdr_debug_i (tdr_debug_i),
+	// TAP states
+	.shift_dr_o ( open ),
+	.pause_dr_o ( open ), 
+	.update_dr_o ( open ),
+	.capture_dr_o ( open ),
+
+	// Select signals for boundary scan or mbist
+	.extest_select_o ( open ),
+	.sample_preload_select_o  ( open ),
+	.mbist_select_o ( open ),
+	.debug_select_o ( open ),
+
+	// TDO signal that is connected to TDI of sub-modules.
+	.tdo_o ( open ), 
+
+	// TDI signals from sub-modules
+	.debug_tdi_i ( open ),     // from debug module
+	.bs_chain_tdi_i ( open ),  // from Boundary Scan Chain
+	.mbist_tdi_i ( open )     // from Mbist Chain
+	);
+
+
+// Set signal once
+initial begin 
+	tms_i = 1'b0; 
+	tck_i = 1'b0; 
+	trst_i = 1'b0;
+	tdi_i = 1'b0;
+	tdr_debug_i = 1'b0;
+end 
+
+// Generate clock
+// TODO: Use TB input and Sim PLL generation
+always begin
+	#5 tck_i = ~tck_i;
+end
+
+// Set up VCD dump
+initial begin
+	$dumpfile ("simulation.vcd");
+	$dumpvars (tck_i);	
+//	$dumpall;
+end
+
+//initial
+//#100 $finish;
+
+always @ (posedge tck_i) begin
+ 	// Reset -> [TRL]
+	trst_i = #9 1'b1;
+	
+	// Undo reset -> [RTI]
+ 	trst_i = #10 1'b0;
+	
+	// -> [Select_DR]
+	tms_i = #10 1'b1;
+
+	// -> [Select_IR]
+	tms_i = #10 1'b1;	
+	 
+	// -> [Cap_IR]
+	tms_i = #10 1'b0;
+
+	// Shift 1-1-1-1 [BYPASS INSTR]
+	tdi_i = #20 1'b1;
+	tdi_i = #10 1'b1;	
+	tdi_i = #10 1'b1;
+	tdi_i = #10 1'b1;
+
+	// -> [Exit1_IR]
+	tdi_i = 1'b0;
+	tms_i = 1'b1;
+	
+	// -> [Update_IR]
+	tms_i = #10 1'b1; 
+
+	// -> [Select_DR]
+	tms_i = #10 1'b1; 
+
+	// -> [Cap_DR]
+	tms_i = #10 1'b0;	
+// --------------------------
+// Auto generated code should be included here
+// --------------------------

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ $# != 3 ]
+then
+	echo "-- Error: Incorrect Usage" 1>&2
+        echo "-- Usage: $0 <tdr golden file> <resim legacy results> <resim compressed results>" 1>&2
+	exit 1
+fi
+
+golden_file=$1
+legacy_file=$2
+compressed_file=$3
+exit_code=0
+
+echo "Info: Eval results for golden file '$golden_file' !"
+sed 's/x//g' < $legacy_file > $legacy_file.new
+echo "Comparing '$golden_file' '$legacy_file'... "
+diff -B -w $golden_file $legacy_file.new
+if [ $? != 0 ]
+then
+    echo "Error: Legacy JTAG differs from golden one!" 1>&2
+    exit_code=1
+else
+    echo "Info: Legacy JTAG comparison ended successfully!"
+fi
+
+sed 's/x//g' < $compressed_file > $compressed_file.new
+echo "Comparing '$golden_file' '$compressed_file.new'... "
+diff -B -w $golden_file $compressed_file.new
+
+if [ $? != 0 ]
+then
+    echo "Error: Compressed JTAG differs from golden one!" 1>&2
+    exit_code=1
+else
+    echo "Info: Compressed JTAG comparison ended successfully!"
+fi
+
+exit $exit_code

@@ -1,0 +1,21 @@
+// ---------------------------
+	// -> [Exit1_DR]
+	tms_i = 1'b1;
+
+	// -> [Update_DR]
+	tms_i = #10 1'b1; 
+
+	// -> [RTI]
+	tms_i = #10 1'b0;
+
+ 	// -> [RTI]
+	tms_i = #50 1'b0;
+	
+	// [DEBUG]
+	tdr_debug_i = 1'b1;
+	tdr_debug_i = #10 1'b0;
+	$display("Reached end");	
+end
+
+endmodule
+
