@@ -1,26 +1,28 @@
 # VecTHOR
 This documentation briefly presents the seven approaches that have
 been developed in the context of _Test Vector
-Transmitting using enhanced compression-based TAP controllers_ (VecTHOR)’s retarget frame-
-work.
+Transmitting using enhanced compression-based TAP controllers_ (VecTHOR)’s retarget framework.
 
 These approaches include four fast heuristic methods that invoke a word-based Huffman encoding technique
 and, furthermore, three formal approaches using a Pseudo-Boolean Optimization solving technique.
 Since the basic principle of these retargeting techniques have been described
 in [REF-TBA](http://tba.de), this document focuses on the software-side of the developed framework.
 
-# Prerequistes
+# Prerequistes / Status
 
 ## Required packages for documentation (latex only)
 texlive-multirow texlive-hanging texlive-stackengine texlive-sectsty texlive-tocloft texlive-newunicodechar texlive-etoc
 
 ## Test classes
-    * SBDCM | passed
-    * SCM
-    * SDCM
-    * SPC
-    * SSCPP
-    * SSC
+All tests were conducted on a _Fedora 30_ (with _gcc 9.2.1_) system holding an _Intel Xenon E3-1240v2_ 3.4 GHz processor with
+32 GB system memory.
+
+* SBDCM | passed
+* SCM
+* SDCM
+* SPC
+* SSCPP
+* SSC
     
 # Overview of Retargeting Techniques
 The individual retargeting technique can be enabled by setting the configuration accordingly,
@@ -87,7 +89,63 @@ by calling the compiled and linked executable.
  * system
         
 # Available Options
-TBA
+Several options exist to control VecTHOR’s behavior.
+This can be either done by using different call parameters or by using the configuration file.
+If VecTHOR is invoked with the _–help_ parameter, the list of available call parameters
+will be emitted.
+
+```
+[user@pc VecTHOR ]$ VecTHOR −−Help
+	[ i ]Allowed options:
+		−−Help				produces help message
+		−−Verbose			be verbose
+		−−Debug				prints lots of debug info
+		−−Stats				prints stats
+		−−Plot				generates plots
+		−−Hex				processes data as hex
+		−−STIL				processes data as STIL format (not-available in v.0.9 - see below)
+		−−ConfigFile arg		reads configuration file
+		−−ReadTDR arg		reads external TDR data file
+		−−NumRTDR arg		number of bytes to be generated (random)
+		−−LegacyJTAG arg		generates legacy JTAG sequence
+		−−CompressedJTAG arg generates compressed JTAG sequence
+		−−WriteGolden arg	write golden file for comparison`
+```
+
+### Command-line Call Parameters
+The call parameters are as follows:
+
+* **Verbose|Debug|Stats** Boolean flags to control the log level, i.e., the differ-
+ent level of details being printed to the console. Note that this possibly
+exceeds your buffer when using the debug log level on large incoming test
+data.
+* **Plot** Boolean flag to control whether VecTHOR creates specific gnuplot files,
+which are linked to the buffering functionality that has not been described
+in detail in this book.
+* **Hex** Boolean flag to enable the processing of incoming test data (using the
+ReadTDR parameter) that are encoding in hex.
+* **STIL** Boolean flag to enable the processing of incoming test data by using
+an external STIL parsing library.
+* **ConfigFile 'file'** Determines the user-defined configuration file that is be-
+ing processed.
+* **ReadTDR 'file'** Sets the file that holds the incoming test data.
+* **NumTDR 'int'** Controls the number of random bits to be generated.
+* **LegacyJTAG 'file'** Determines the output filename for the correspond-
+ing legacy JTAG operation, which can is typically used to measure the
+reference cycle number precisely and for re-simulation (validation).
+* **CompressesJTAG 'file'** Defines the filename (and path) to store the
+compressed test data seamlessly encoded by using the extended JTAG
+protocol.
+* **WriteGolden 'file'** Writes the golden test data into a separate file, which
+can then be used for validation purposes.
+
+### Configuration-file Parameters
+As indicated by the parameter _ConfigFile_ above, VecTHOR supports user-
+defined configuration files, which are encoded in the YAML syntax.
+The configuration file controls various parameters, which are typically not
+changed in between two consecutive runs.
+
+TBA - will follow soon
 
 # (Planned) Future Works
 1. One future feature concerns a graphical user interface, which will
@@ -105,3 +163,8 @@ highly relevant research question. It is assumed that this will further increase
 compression efficacy since some test data are typically unspecified in different
 test applications. Consequently, the full potential is not yet revealed in such
 a circumstance.
+
+# Version history
+## v. 0.9
+
+> Complete release of retargeting framework w/o STIL integration due to intended change of external library.
