@@ -46,18 +46,18 @@ icantly. Finally, Dynamic-Merge-Compress combines both the dynamic recon-
 figuration with the run-length encoding capability and, by this, achieves the
 best results from the heuristic approach with respect to the reduction of the
 test data volume and test application time, respectively.
-	* Compress
-	* Merge-Compress
-	* Dynamic-Compress
-	* Dynamic-Merge-Compress
+    * Compress
+    * Merge-Compress
+    * Dynamic-Compress    
+    * Dynamic-Merge-Compress
 
 Besides the heuristic approaches, different techniques have been proposed in-
 voking formal techniques. More precisely, the task of determining a most ben-
 eficial set of codewords has been mapped to a Pseudo-Boolean optimization instance, yielding the
 three approaches as follows:
-	* SAT-Compress
-	* SAT-Postprocess-Compress
-	* Partition-SAT-Compress
+    * SAT-Compress
+    * SAT-Postprocess-Compress
+    * Partition-SAT-Compress
 	
 # Getting Started
 Since VecTHOR is solely implemented in C++ and utilizes heavily C++11 features, a compatible C++
